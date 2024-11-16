@@ -29,33 +29,35 @@ To get started with the project, follow these steps:
 
 Example of **requirements.txt**:
 ```
-Flask==2.2.3
-Pytest==7.2.0
+Flask
 ```
 
 Example of **app.py**:
 ```python
 from flask import Flask
+
 app = Flask(__name__)
 
 @app.route('/')
-def hello_world():
-    return 'Hello, World!'
+def home():
+    return "Hello, Flask!"
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=5000)
+
 ```
 
 Example of **test_app.py**:
 ```python
 from app import app
-import pytest
 
-@pytest.fixture
-def client():
-    with app.test_client() as client:
-        yield client
+def test_home():
+    # Test the home route
+    response = app.test_client().get("/")
+    
+    assert response.status_code==200  # Check for HTTP 200 status
+    assert response.data==b"Hello, Flask!"  # Check the response content
 
-def test_hello_world(client):
-    response = client.get('/')
-    assert response.data == b'Hello, World!'
 ```
 
 Example of **Dockerfile**:
@@ -95,49 +97,69 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    # Step 1: Check out the code
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
+    # Step 2: Set up Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    # Step 3: Install dependencies
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Run tests
-        run: |
-          pytest test_app.py
+    # Step 4: Run tests
+    - name: Run Tests
+      run: python test.py
 
-      - name: Build Docker image
-        run: |
-          docker build -t flask-app .
-          
-  deploy:
+  docker-build:
     runs-on: ubuntu-latest
-    needs: build-and-test
+    needs: test
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    # Step 1: Check out the code
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    # Step 2: Set up Docker Buildx (required for multi-platform builds and pushing)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      - name: Push Docker image
-        run: |
-          docker tag flask-app ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+    # Step 3: Log in to Docker Hub (optional)
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Step 4: Build and push Docker image
+    - name: Build and Push Docker Image
+      id: docker_build  # Assign an ID to this step
+      uses: docker/build-push-action@v4
+      with:
+        context: .  # Use the current directory for the context
+        file: DockerFile  # Ensure it is named exactly 'Dockerfile'
+        push: true
+        tags: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
+
+    # Step 5: Echo Docker Image Digest
+    - name: Output Docker Image Digest
+      run: |
+        echo "Docker Image Digest: ${{ steps.docker_build.outputs.digest }}"
 ```
 
 ### Deploy Job
