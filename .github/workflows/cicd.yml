@@ -59,7 +59,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .  # Use the current directory for the context
-        dockerfile: Dockerfile  # Ensure it is named exactly 'Dockerfile'
+        file: DockerFile  # Ensure it is named exactly 'Dockerfile'
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
 
