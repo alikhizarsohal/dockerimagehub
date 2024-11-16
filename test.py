@@ -1,6 +1,6 @@
 from app import app
 
-def test_home(self):
+def test_home():
     # Test the home route
     response = app.test_client().get("/")
     
