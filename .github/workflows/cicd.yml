@@ -55,12 +55,14 @@ jobs:
 
     # Step 4: Build and push Docker image
     - name: Build and Push Docker Image
+      id: docker_build  # Assign an ID to this step
       uses: docker/build-push-action@v4
       with:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
-    
+
     # Step 5: Echo Docker Image Digest
     - name: Output Docker Image Digest
-      run: echo ${{ steps.docker_build.outputs.digest }}
+      run: |
+        echo "Docker Image Digest: ${{ steps.docker_build.outputs.digest }}"
