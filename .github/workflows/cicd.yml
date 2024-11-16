@@ -58,7 +58,7 @@ jobs:
       id: docker_build  # Assign an ID to this step
       uses: docker/build-push-action@v4
       with:
-        context: .
+        context: ./DockerFile
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/flask-app:latest
 
