@@ -1,6 +1,4 @@
-Sure! Here's a complete `README.md` for your project in Markdown format:
 
-```markdown
 # Automating Flask App Development with GitHub Actions
 
 This repository demonstrates how to automate the development, testing, and deployment of a Flask application using GitHub Actions. The automation process involves creating a CI/CD pipeline that builds the application, runs tests, creates a Docker image, and pushes it to Docker Hub.
@@ -181,7 +179,3 @@ By following the steps outlined in this guide, you can easily set up an automate
 4. Push to the branch (`git push origin feature-branch`).
 5. Create a new Pull Request.
 
----
-
-Happy coding! 😊
-```
