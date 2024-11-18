@@ -16,7 +16,7 @@ This repository demonstrates how to automate the development, testing, and deplo
 
 ## Project Setup
 
-To get started with the project, follow these steps:
+To get started with the project, just follow these steps:
 
 1. **Create a GitHub Repository**  
    Start by creating a new repository on GitHub.
